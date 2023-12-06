@@ -38,45 +38,48 @@ var servicelog = logf.Log.WithName("service-resource")
 
 // TODO(user): EDIT THIS FILE!  THIS IS SCAFFOLDING FOR YOU TO OWN!
 
-//+kubebuilder:webhook:path=/mutate-core-v1-service,mutating=true,failurePolicy=fail,sideEffects=None,groups=core,resources=services,verbs=create;update,versions=v1,name=mservice.kb.io,admissionReviewVersions=v1
+//+kubebuilder:webhook:path=/mutate--v1-service,mutating=true,failurePolicy=fail,sideEffects=None,groups=core,resources=services,verbs=create;update,versions=v1,name=mutate.service.webhook.marokiki.net,admissionReviewVersions=v1
 
-type ServiceNetwork struct {}
+type ServiceNetwork struct{}
 
 var _ admission.CustomDefaulter = &ServiceNetwork{}
 
 // Default implements webhook.Defaulter so a webhook will be registered for the type
-func (*ServiceNetwork) Default(ctx context.Context, obj runtime.Object) {
+func (*ServiceNetwork) Default(ctx context.Context, obj runtime.Object) error {
 	service := obj.(*corev1.Service)
 	servicelog.Info("default", "name", service.Name)
 
-	// TODO(user): fill in your defaulting logic.
+	if service.Spec.IPFamilyPolicy == nil {
+		service.Spec.IPFamilyPolicy = new(corev1.IPFamilyPolicy)
+	}
+	*service.Spec.IPFamilyPolicy = corev1.IPFamilyPolicyPreferDualStack
+	*&service.Spec.IPFamilies = []corev1.IPFamily{corev1.IPv4Protocol, corev1.IPv6Protocol}
+
+	return nil
 }
 
 // TODO(user): change verbs to "verbs=create;update;delete" if you want to enable deletion validation.
-//+kubebuilder:webhook:path=/validate-core-v1-service,mutating=false,failurePolicy=fail,sideEffects=None,groups=core,resources=services,verbs=create;update,versions=v1,name=vservice.kb.io,admissionReviewVersions=v1
+//+kubebuilder:webhook:path=/validate--v1-service,mutating=false,failurePolicy=fail,sideEffects=None,groups=core,resources=services,verbs=create;update,versions=v1,name=validate.service.webhook.marokiki.net,admissionReviewVersions=v1
 
-// var _ webhook.Validator = &Service{}
+var _ admission.CustomValidator = &ServiceNetwork{}
 
-// // ValidateCreate implements webhook.Validator so a webhook will be registered for the type
-// func (r *Service) ValidateCreate() (admission.Warnings, error) {
-// 	servicelog.Info("validate create", "name", r.Name)
+// ValidateCreate implements webhook.Validator so a webhook will be registered for the type
+func (*ServiceNetwork) ValidateCreate(ctx context.Context, obj runtime.Object) (admission.Warnings, error) {
+	service := obj.(*corev1.Service)
+	servicelog.Info("validate create", "name", service.Name)
 
-// 	// TODO(user): fill in your validation logic upon object creation.
-// 	return nil, nil
-// }
+	return nil, nil
+}
 
-// // ValidateUpdate implements webhook.Validator so a webhook will be registered for the type
-// func (r *Service) ValidateUpdate(old runtime.Object) (admission.Warnings, error) {
-// 	servicelog.Info("validate update", "name", r.Name)
+// ValidateUpdate implements webhook.Validator so a webhook will be registered for the type
+func (*ServiceNetwork) ValidateUpdate(ctx context.Context, oldObj, newObj runtime.Object) (admission.Warnings, error) {
+	service := newObj.(*corev1.Service)
+	servicelog.Info("validate update", "name", service.Name)
 
-// 	// TODO(user): fill in your validation logic upon object update.
-// 	return nil, nil
-// }
+	return nil, nil
+}
 
-// // ValidateDelete implements webhook.Validator so a webhook will be registered for the type
-// func (r *Service) ValidateDelete() (admission.Warnings, error) {
-// 	servicelog.Info("validate delete", "name", r.Name)
-
-// 	// TODO(user): fill in your validation logic upon object deletion.
-// 	return nil, nil
-// }
+// ValidateDelete implements webhook.Validator so a webhook will be registered for the type
+func (*ServiceNetwork) ValidateDelete(ctx context.Context, obj runtime.Object) (admission.Warnings, error) {
+	return nil, nil
+}

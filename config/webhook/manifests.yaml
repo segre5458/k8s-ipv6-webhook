@@ -10,9 +10,9 @@ webhooks:
     service:
       name: webhook-service
       namespace: system
-      path: /mutate-core-v1-service
+      path: /mutate--v1-service
   failurePolicy: Fail
-  name: mservice.kb.io
+  name: mutate.service.webhook.marokiki.net
   rules:
   - apiGroups:
     - ""
@@ -36,9 +36,9 @@ webhooks:
     service:
       name: webhook-service
       namespace: system
-      path: /validate-core-v1-service
+      path: /validate--v1-service
   failurePolicy: Fail
-  name: vservice.kb.io
+  name: validate.service.webhook.marokiki.net
   rules:
   - apiGroups:
     - ""

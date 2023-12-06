@@ -33,7 +33,7 @@ import (
 	metricsserver "sigs.k8s.io/controller-runtime/pkg/metrics/server"
 	
 	corev1 "k8s.io/api/core/v1"
-	v1 "github.com/segre5458/k8s-ipv6-webhook"
+	v1 "github.com/segre5458/k8s-ipv6-webhook/api/v1"
 	//+kubebuilder:scaffold:imports
 )
 
@@ -96,6 +96,7 @@ func main() {
 	// }
 	ctrl.NewWebhookManagedBy(mgr).
 		WithDefaulter(&v1.ServiceNetwork{}).
+		WithValidator(&v1.ServiceNetwork{}).
 		For(&corev1.Service{}).
 		Complete()
 	//+kubebuilder:scaffold:builder
