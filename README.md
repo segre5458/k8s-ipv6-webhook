@@ -11,10 +11,16 @@ This proves beneficial when establishing an IPv6 environment in a Kubernetes clu
 - Access to a Kubernetes v1.11.3+ cluster.
 
 ### To Deploy on the cluster
+**Login Docker Hub
+
+```sh
+sudo docker login -u segre5458
+```
+
 **Build and push your image to the location specified by `IMG`:**
 
 ```sh
-make docker-build docker-push IMG=<some-registry>/k8s-ipv6-webhook:tag
+sudo make docker-build docker-push IMG=segre5458/k8s-ipv6-webhook:latest 
 ```
 
 **NOTE:** This image ought to be published in the personal registry you specified. 
@@ -30,7 +36,7 @@ make install
 **Deploy the Manager to the cluster with the image specified by `IMG`:**
 
 ```sh
-make deploy IMG=<some-registry>/k8s-ipv6-webhook:tag
+make deploy IMG=segre5458/k8s-ipv6-webhook:latest
 ```
 
 > **NOTE**: If you encounter RBAC errors, you may need to grant yourself cluster-admin 
